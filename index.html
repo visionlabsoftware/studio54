@@ -211,6 +211,14 @@
     -webkit-background-clip:text;background-clip:text;color:transparent;
   }
   .score small{font-size:.42em;color:var(--muted);-webkit-text-fill-color:var(--muted)}
+  .result-img{
+    display:block;width:100%;max-width:270px;aspect-ratio:2/3;object-fit:cover;
+    margin:14px auto 22px;border-radius:18px;border:1px solid var(--line);
+    box-shadow:0 18px 50px rgba(0,0,0,.55),0 0 40px rgba(210,75,176,.22);
+    animation:reveal .7s cubic-bezier(.2,.8,.2,1);
+    -webkit-user-drag:none;
+  }
+  @keyframes reveal{from{opacity:0;transform:scale(.92) translateY(10px)}to{opacity:1;transform:none}}
   .verdict{font-family:"Playfair Display",serif;font-style:italic;font-size:24px;color:var(--gold-soft);margin:10px 0 8px}
   .verdict-text{color:var(--muted);line-height:1.6;max-width:440px;margin:0 auto 22px}
 
@@ -311,8 +319,7 @@
         <span class="mini-logo" aria-hidden="true">54</span>
         <p class="score-label">Az eredmény</p>
         <div class="score"><span id="scoreNum">0</span><small id="scoreMax"> / 9</small></div>
-        <p class="verdict" id="verdict"></p>
-        <p class="verdict-text" id="verdictText"></p>
+        <img class="result-img" id="resultImg" alt="" draggable="false">
       </div>
       <div class="entry" id="entry" role="status"></div>
       <ul class="review" id="review"></ul>
@@ -389,6 +396,16 @@ const QUESTIONS = [
   }
 ];
 
+// Eredményképek pontszám szerint
+const RESULTS = [
+  { min:0, max:0, src:"img/eredmeny-0.jpg",   alt:"0/9 – Te biztosan rossz ajtón jöttél be!" },
+  { min:1, max:1, src:"img/eredmeny-1.jpg",   alt:"1/9 – Még van mit nézelődni! Sebaj, a bulihoz nem kell történelemből jelesnek lenni." },
+  { min:2, max:3, src:"img/eredmeny-2-3.jpg", alt:"2–3/9 – Van még mit tanulni! A diszkókorszakról, de a táncparketten még bizonyíthatsz." },
+  { min:4, max:5, src:"img/eredmeny-4-5.jpg", alt:"4–5/9 – Nem rossz! A diszkógömb már forog, de még nem kaptad el teljesen a ritmust." },
+  { min:6, max:7, src:"img/eredmeny-6-7.jpg", alt:"6–7/9 – Szép munka! Már csak egy flitteres ruha hiányzik a tökéletes összhatáshoz." },
+  { min:8, max:9, src:"img/eredmeny-8-9.jpg", alt:"8–9/9 – Gratulálok! Te nemcsak ismered a Studio 54-et, valószínűleg a VIP-listán is rajta lettél volna!" }
+];
+
 const LETTERS = ["A", "B", "C"];
 const $ = id => document.getElementById(id);
 let current = 0, score = 0, answers = [];
@@ -451,7 +468,9 @@ $("startForm").addEventListener("submit", async e => {
   }
 });
 
+let preloaded = false;
 function begin(){
+  if (!preloaded){ RESULTS.forEach(r => { const i = new Image(); i.src = r.src; }); preloaded = true; }
   current = 0; score = 0; answers = [];
   renderQuestion();
   show("quiz");
@@ -519,12 +538,11 @@ function showResult(){
   const total = QUESTIONS.length;
   $("scoreNum").textContent = score;
   $("scoreMax").textContent = " / " + total;
-  let v, t;
-  if (score === total){ v = "Igazi Studio 54 legenda!"; t = "Hibátlan! Ezzel a tudással a bejáratnál sem lehetne gond – irány a táncparkett."; }
-  else if (score >= Math.ceil(total * 0.6)){ v = "A vendéglistán a helyed!"; t = "Szép eredmény – a disco-korszak hangulata már megvan, a többit hozza az este."; }
-  else { v = "A buli már csak felpörget!"; t = "Nem baj, ha néhány válasz most nem talált – a lényeg úgyis a jó hangulat és a közös tánc."; }
-  $("verdict").textContent = v;
-  $("verdictText").textContent = t;
+  const res = RESULTS.find(r => score >= r.min && score <= r.max) || RESULTS[0];
+  const img = $("resultImg");
+  img.src = res.src;
+  img.alt = res.alt;
+  img.style.animation = "none"; void img.offsetWidth; img.style.animation = "";
 
   const r = $("review");
   r.innerHTML = "";
