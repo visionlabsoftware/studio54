@@ -112,6 +112,42 @@
     background:linear-gradient(135deg,rgba(232,184,99,.08),rgba(210,75,176,.06));
     padding:20px 20px 18px;margin-bottom:22px;
   }
+  /* Nyeremény */
+  .prize{display:grid;grid-template-columns:116px 1fr;gap:18px;align-items:center;margin-bottom:4px}
+  .prize-visual{position:relative;height:200px;display:flex;align-items:flex-end;justify-content:center}
+  .prize-visual img{
+    position:relative;z-index:1;height:100%;width:auto;
+    filter:drop-shadow(0 14px 18px rgba(0,0,0,.6)) drop-shadow(0 0 14px rgba(232,184,99,.25));
+    animation:bottle 5s ease-in-out infinite;
+  }
+  @keyframes bottle{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-6px) rotate(1deg)}}
+  .prize-visual .glow{
+    position:absolute;left:50%;top:52%;width:170px;height:170px;transform:translate(-50%,-50%);
+    background:radial-gradient(circle,rgba(246,220,166,.38),rgba(210,75,176,.14) 45%,transparent 70%);
+    border-radius:50%;filter:blur(4px);
+  }
+  .prize-visual .tw{
+    position:absolute;z-index:2;width:12px;height:12px;
+    background:radial-gradient(circle,#fff 0 18%,transparent 20%),
+      conic-gradient(from 0deg,transparent 0 40deg,rgba(255,244,214,.95) 45deg,transparent 50deg 130deg,rgba(255,244,214,.95) 135deg,transparent 140deg 220deg,rgba(255,244,214,.95) 225deg,transparent 230deg 310deg,rgba(255,244,214,.95) 315deg,transparent 320deg);
+    border-radius:50%;opacity:0;animation:twinkle 3.2s ease-in-out infinite;
+  }
+  .prize-visual .t1{top:18%;left:8%;animation-delay:.2s}
+  .prize-visual .t2{top:6%;right:10%;animation-delay:1.3s;width:9px;height:9px}
+  .prize-visual .t3{bottom:22%;right:2%;animation-delay:2.2s}
+  .prize-tag{
+    display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+    color:#1c0f07;background:linear-gradient(135deg,var(--gold-soft),var(--gold));
+    padding:6px 10px;border-radius:999px;margin-bottom:10px;
+  }
+  .raffle .prize-name{
+    display:block;font-family:"Playfair Display",serif;font-weight:700;font-size:22px;line-height:1.15;
+    color:var(--ink);margin-bottom:8px;
+  }
+  .prize-name em{display:block;font-style:italic;font-weight:600;color:var(--gold);font-size:18px;margin-top:2px}
+  .raffle .prize-txt p{margin:0;color:var(--muted);font-size:14.5px;line-height:1.5}
+  .prize-sep{height:1px;margin:18px 0 16px;background:linear-gradient(90deg,transparent,var(--line),transparent)}
+
   .raffle h3{
     font-family:"Playfair Display",serif;font-weight:700;font-size:19px;color:var(--gold-soft);
     display:flex;align-items:center;gap:8px;margin-bottom:6px;
@@ -262,6 +298,10 @@
     .card{padding:30px 20px 24px;border-radius:18px}
     .opt{padding:13px 14px;font-size:15.5px}
     .raffle{padding:18px 16px 16px}
+    .prize{grid-template-columns:96px 1fr;gap:14px}
+    .prize-visual{height:172px}
+    .raffle .prize-name{font-size:19px}
+    .prize-name em{font-size:16px}
   }
   @media (prefers-reduced-motion:reduce){
     *{animation:none!important;transition:none!important}
@@ -285,11 +325,24 @@
       <div class="meta">
         <span class="chip">9 kérdés</span>
         <span class="chip">kb. 3 perc</span>
-        <span class="chip">Sorsolás</span>
+        <span class="chip">Pezsgősorsolás</span>
       </div>
 
       <form id="startForm" novalidate>
         <div class="raffle">
+          <div class="prize">
+            <div class="prize-visual" aria-hidden="true">
+              <span class="glow"></span>
+              <img src="img/moet.webp" alt="" draggable="false">
+              <i class="tw t1"></i><i class="tw t2"></i><i class="tw t3"></i>
+            </div>
+            <div class="prize-txt">
+              <span class="prize-tag">✦ Nyeremény</span>
+              <h3 class="prize-name">Moët &amp; Chandon<em>Brut Impérial</em></h3>
+              <p>A kitöltők között egy üveg Moët &amp; Chandon pezsgőt sorsolunk ki.</p>
+            </div>
+          </div>
+          <div class="prize-sep" aria-hidden="true"></div>
           <h3>Részvétel a sorsoláson <span class="opt-tag">nem kötelező</span></h3>
           <p>A céges e-mail-cím megadásával a kitöltés bekerül a sorsolásba – minden helyes válasz egy sorsjegyet ér. Egy e-mail-címmel egy kitöltés lehetséges. E-mail-cím nélkül is játszható a kvíz, ilyenkor csak a sorsolás marad ki.</p>
           <label class="hp" aria-hidden="true">Weboldal <input type="text" id="website" tabindex="-1" autocomplete="off"></label>
