@@ -112,6 +112,21 @@
     background:linear-gradient(135deg,rgba(232,184,99,.08),rgba(210,75,176,.06));
     padding:20px 20px 18px;margin-bottom:22px;
   }
+  /* Idézet */
+  .quote{margin:30px auto 4px;max-width:470px;text-align:center;position:relative;padding-top:18px}
+  .quote::before{
+    content:"";position:absolute;top:0;left:50%;width:60px;height:1px;transform:translateX(-50%);
+    background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  }
+  .quote blockquote{
+    font-family:"Playfair Display",serif;font-style:italic;font-weight:600;
+    font-size:18px;line-height:1.5;color:var(--gold-soft);
+    text-shadow:0 0 18px rgba(232,184,99,.25);
+  }
+  .quote figcaption{
+    margin-top:10px;font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);
+  }
+
   /* Nyeremény */
   .prize{display:grid;grid-template-columns:116px 1fr;gap:18px;align-items:center;margin-bottom:4px}
   .prize-visual{position:relative;height:200px;display:flex;align-items:flex-end;justify-content:center}
@@ -299,6 +314,7 @@
     .opt{padding:13px 14px;font-size:15.5px}
     .raffle{padding:18px 16px 16px}
     .prize{grid-template-columns:96px 1fr;gap:14px}
+    .quote blockquote{font-size:16.5px}
     .prize-visual{height:172px}
     .raffle .prize-name{font-size:19px}
     .prize-name em{font-size:16px}
@@ -344,13 +360,18 @@
           </div>
           <div class="prize-sep" aria-hidden="true"></div>
           <h3>Részvétel a sorsoláson <span class="opt-tag">nem kötelező</span></h3>
-          <p>A céges e-mail-cím megadásával a kitöltés bekerül a sorsolásba – minden helyes válasz egy sorsjegyet ér. Egy e-mail-címmel egy kitöltés lehetséges. E-mail-cím nélkül is játszható a kvíz, ilyenkor csak a sorsolás marad ki.</p>
+          <p>A céges e-mail-cím megadásával a kitöltés bekerül a sorsolásba – minden helyes válasz egy sorsjegyet ér. Egy e-mail-címmel egy kitöltés lehetséges.</p>
           <label class="hp" aria-hidden="true">Weboldal <input type="text" id="website" tabindex="-1" autocomplete="off"></label>
           <input class="field" type="email" id="email" inputmode="email" autocomplete="email" placeholder="Céges e-mail-cím" aria-label="Céges e-mail-cím">
           <div class="form-msg" id="formMsg" role="alert"></div>
         </div>
         <button class="btn" id="startBtn" type="submit">Indulhat a kvíz</button>
       </form>
+
+      <figure class="quote">
+        <blockquote>„Ez az a hely, ahol végre valóra vált a hatvanas évekbeli jóslatom: a jövőben mindenki híres lesz tizenöt percre.”</blockquote>
+        <figcaption>— Andy Warhol, 1979</figcaption>
+      </figure>
     </section>
 
     <!-- Question -->
