@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Studio 54 kvíz – sorsolás</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Monoton&family=Playfair+Display:ital,wght@0,700;1,600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--gold:#e8b863;--gold-soft:#f6dca6;--gold-deep:#b9832f;--magenta:#d24bb0;--ink:#f8efe3;--muted:#cdbda6;--line:rgba(232,184,99,.28);--good:#7fd6a0;--bad:#f07a8c;--panel:rgba(26,15,11,.85)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"DM Sans",system-ui,sans-serif;color:var(--ink);min-height:100vh;
+    background:radial-gradient(ellipse at 20% 0%,rgba(210,75,176,.18),transparent 55%),radial-gradient(ellipse at 90% 10%,rgba(232,184,99,.16),transparent 50%),#0d0706;
+    caret-color:transparent;-webkit-user-select:none;user-select:none}
+  input,td.email,.winners strong{caret-color:var(--gold-soft);-webkit-user-select:text;user-select:text}
+  .wrap{max-width:1000px;margin:0 auto;padding:32px 20px 60px}
+  header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:28px;flex-wrap:wrap}
+  .logo{font-family:"Monoton",cursive;font-weight:400;color:var(--gold-soft);font-size:34px;letter-spacing:1px;text-shadow:0 0 16px rgba(232,184,99,.45)}
+  .logo small{font-family:"DM Sans";font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-left:10px;text-shadow:none}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px;margin-bottom:20px}
+  h2{font-family:"Playfair Display",serif;font-size:22px;color:var(--gold-soft);margin-bottom:14px}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:20px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px}
+  .stat b{display:block;font-family:"Playfair Display",serif;font-size:34px;color:var(--gold-soft)}
+  .stat span{font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .btn{display:inline-block;font:700 14px/1 "DM Sans",sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#1c0f07;
+    background:linear-gradient(135deg,var(--gold-soft),var(--gold) 45%,var(--gold-deep));border:none;border-radius:12px;padding:14px 18px;cursor:pointer;text-decoration:none}
+  .btn.ghost{background:transparent;color:var(--gold-soft);border:1px solid var(--line)}
+  .btn.big{font-size:18px;padding:20px 30px;border-radius:14px;box-shadow:0 12px 34px rgba(232,184,99,.3)}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .field{font:500 15px "DM Sans",sans-serif;color:var(--ink);background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.16);border-radius:10px;padding:13px 14px;outline:none;width:100%}
+  .field:focus{border-color:var(--gold)}
+  .flash{padding:12px 16px;border-radius:12px;margin-bottom:18px;background:rgba(240,122,140,.1);border:1px solid rgba(240,122,140,.45);color:var(--bad)}
+  .flash:empty{display:none}
+  .draw-stage{text-align:center;padding:26px 10px 10px}
+  .slot{min-height:92px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:20px}
+  .slot .name{font-family:"Playfair Display",serif;font-weight:700;font-size:clamp(26px,5vw,44px);color:var(--ink);word-break:break-all}
+  .slot .name.win{background:linear-gradient(135deg,var(--gold-soft),var(--gold),var(--magenta));-webkit-background-clip:text;background-clip:text;color:transparent;animation:pop .5s ease}
+  .slot .sub{color:var(--muted);font-size:14px;margin-top:6px}
+  @keyframes pop{0%{transform:scale(.8);opacity:0}60%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+  table{width:100%;border-collapse:collapse;font-size:14.5px}
+  th{text-align:left;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:500;padding:10px 8px;border-bottom:1px solid var(--line)}
+  td{padding:10px 8px;border-bottom:1px solid rgba(255,255,255,.06)}
+  td.email{word-break:break-all}
+  .pill{display:inline-block;padding:3px 9px;border-radius:999px;font-size:12px;font-weight:700;background:var(--gold);color:#1c0f07;margin-left:6px}
+  .score5{color:var(--good);font-weight:700}
+  .muted{color:var(--muted);font-size:14px;line-height:1.55}
+  ol.winners{padding-left:22px;line-height:1.9}
+  ol.winners li::marker{color:var(--gold)}
+  .login{max-width:380px;margin:12vh auto 0}
+  .login .logo{text-align:center;margin-bottom:22px;font-size:46px}
+  .login form{display:grid;gap:12px}
+  .confetti{position:fixed;inset:0;pointer-events:none;z-index:5;overflow:hidden}
+  .confetti i{position:absolute;top:-12px;width:9px;height:15px;border-radius:2px;animation:fall linear forwards}
+  @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+  .scroll{overflow-x:auto}
+  .hidden{display:none!important}
+  .spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(246,220,166,.3);border-top-color:var(--gold-soft);border-radius:50%;animation:rot .8s linear infinite;vertical-align:-3px;margin-right:8px}
+  @keyframes rot{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<!-- Belépés -->
+<div class="wrap login" id="loginView">
+  <div class="logo">Studio 54</div>
+  <div class="panel">
+    <h2>Sorsolás – belépés</h2>
+    <div class="flash" id="loginMsg"></div>
+    <form id="loginForm" autocomplete="off">
+      <input class="field" type="password" id="pw" placeholder="Jelszó" autofocus required>
+      <button class="btn" type="submit" id="loginBtn">Belépés</button>
+    </form>
+  </div>
+</div>
+
+<!-- Admin -->
+<div class="wrap hidden" id="adminView">
+  <header>
+    <div class="logo">Studio 54<small>kvíz · sorsolás</small></div>
+    <div class="row">
+      <button class="btn ghost" id="refreshBtn">Frissítés</button>
+      <button class="btn ghost" id="logoutBtn">Kilépés</button>
+    </div>
+  </header>
+
+  <div class="flash" id="adminMsg"></div>
+
+  <div class="stats">
+    <div class="stat"><b id="stCount">0</b><span>Beküldés</span></div>
+    <div class="stat"><b id="stTickets">0</b><span>Sorsjegy összesen</span></div>
+    <div class="stat"><b id="stPerfect">0</b><span>Hibátlan (9/9)</span></div>
+    <div class="stat"><b id="stAvg">0</b><span>Átlagpontszám</span></div>
+  </div>
+
+  <div class="panel">
+    <h2>Sorsolás</h2>
+    <p class="muted">Minden helyes válasz egy sorsjegyet ér, így a több pont nagyobb esélyt jelent. A már kihúzott nyertesek a következő húzásnál nem vesznek részt.</p>
+    <div class="draw-stage">
+      <div class="slot">
+        <div class="name" id="slotName">✦ ✦ ✦</div>
+        <div class="sub" id="slotSub"></div>
+      </div>
+      <button class="btn big" id="drawBtn">Sorsolás indítása</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Nyertesek</h2>
+    <div id="winners"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Beküldések</h2>
+    <p class="muted" style="margin-bottom:12px">A teljes lista a Google Táblázatban is megtalálható – sorokat törölni ott lehet.</p>
+    <div class="scroll" id="entries"></div>
+  </div>
+</div>
+<div class="confetti" id="confetti"></div>
+
+<script>
+const API = "__API__";
+const ANSWERS = 9;
+const $ = id => document.getElementById(id);
+let PW = "";
+let state = { entries: [], winners: [] };
+let drawn = false;
+
+try { PW = sessionStorage.getItem("s54pw") || ""; } catch (e) {}
+
+async function call(body){
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 20000);
+  try{
+    const r = await fetch(API, { method:"POST", body:JSON.stringify(Object.assign({ password:PW }, body)), signal:ctrl.signal, cache:"no-store", redirect:"follow" });
+    return await r.json();
+  }catch(e){
+    return { ok:false, error:"network" };
+  }finally{ clearTimeout(t); }
+}
+
+function esc(s){ const d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+
+async function load(){
+  const res = await call({ action:"list" });
+  if (!res.ok){
+    if (res.error === "auth"){ logout("Hibás jelszó."); return false; }
+    $("adminMsg").textContent = "Nem sikerült betölteni az adatokat. Érdemes újra próbálni.";
+    return false;
+  }
+  $("adminMsg").textContent = res.open ? "" : "A jelentkezés jelenleg le van zárva (Apps Script → QUIZ_OPEN).";
+  state = res;
+  render();
+  return true;
+}
+
+function render(){
+  const E = state.entries, W = state.winners;
+  const won = W.map(w => w.email);
+  const tickets = E.reduce((s, e) => s + e.score, 0);
+  $("stCount").textContent = E.length;
+  $("stTickets").textContent = tickets;
+  $("stPerfect").textContent = E.filter(e => e.score === ANSWERS).length;
+  $("stAvg").textContent = E.length ? (tickets / E.length).toFixed(1).replace(".", ",") : "0";
+
+  const eligible = E.filter(e => e.score > 0 && !won.includes(e.email));
+  if (!drawn){
+    $("slotName").textContent = eligible.length ? "✦ ✦ ✦" : "–";
+    $("slotName").classList.remove("win");
+    $("slotSub").textContent = eligible.length ? eligible.length + " résztvevő a kalapban" : "Nincs sorsolható résztvevő";
+    $("drawBtn").textContent = W.length ? "Újabb nyertes húzása" : "Sorsolás indítása";
+    $("drawBtn").disabled = !eligible.length;
+  }
+
+  $("winners").innerHTML = W.length
+    ? `<ol class="winners">${W.map(w => `<li><strong>${esc(w.email)}</strong> <span class="muted">– ${w.score} pont, húzva: ${esc(w.time)}</span></li>`).join("")}</ol>
+       <button class="btn ghost" id="clearBtn" style="margin-top:14px">Nyertesek listájának törlése</button>`
+    : `<p class="muted">Még nem volt húzás.</p>`;
+  const cb = $("clearBtn");
+  if (cb) cb.addEventListener("click", clearWinners);
+
+  const sorted = [...E].sort((a, b) => b.time.localeCompare(a.time));
+  $("entries").innerHTML = sorted.length
+    ? `<table><thead><tr><th>E-mail-cím</th><th>Pont</th><th>Sorsjegy</th><th>Időpont</th></tr></thead><tbody>${
+        sorted.map(e => `<tr><td class="email">${esc(e.email)}${won.includes(e.email) ? '<span class="pill">Nyertes</span>' : ""}</td><td class="${e.score === ANSWERS ? "score5" : ""}">${e.score} / ${ANSWERS}</td><td>${e.score}</td><td>${esc(e.time)}</td></tr>`).join("")
+      }</tbody></table>`
+    : `<p class="muted">Még nem érkezett beküldés.</p>`;
+}
+
+function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
+
+$("drawBtn").addEventListener("click", async () => {
+  if (drawn){ drawn = false; render(); return; }
+  const won = state.winners.map(w => w.email);
+  const eligible = state.entries.filter(e => e.score > 0 && !won.includes(e.email)).map(e => e.email);
+  if (!eligible.length) return;
+  const btn = $("drawBtn"), nameEl = $("slotName"), subEl = $("slotSub");
+  btn.disabled = true;
+  nameEl.classList.remove("win");
+  subEl.textContent = "Sorsolás folyamatban…";
+
+  const req = call({ action:"draw" });
+  let delay = 45;
+  const start = performance.now();
+  while (performance.now() - start < 3200){
+    nameEl.textContent = eligible[Math.floor(Math.random() * eligible.length)];
+    await sleep(delay);
+    delay = Math.min(delay * 1.06, 260);
+  }
+  const res = await req;
+  if (res.ok){
+    nameEl.textContent = res.winner.email;
+    nameEl.classList.add("win");
+    subEl.textContent = "Gratulálunk! ✦ " + res.winner.score + " pont · " + res.winner.score + " sorsjegy";
+    confetti();
+    drawn = true;
+    btn.textContent = "Tovább a következő húzáshoz";
+    btn.disabled = false;
+    load();
+  } else {
+    nameEl.textContent = "–";
+    subEl.textContent = res.error === "empty" ? "Nincs több sorsolható résztvevő." : "A sorsolás nem sikerült, érdemes újra próbálni.";
+    btn.disabled = res.error === "empty";
+  }
+});
+
+async function clearWinners(){
+  if (!confirm("Biztosan törlődjön a nyertesek listája? A beküldések megmaradnak.")) return;
+  const res = await call({ action:"clearWinners" });
+  if (!res.ok){ $("adminMsg").textContent = "A törlés nem sikerült."; return; }
+  drawn = false;
+  load();
+}
+
+function confetti(){
+  const c = $("confetti");
+  const colors = ["#f6dca6","#e8b863","#d24bb0","#ffffff","#b9832f"];
+  for (let k = 0; k < 140; k++){
+    const p = document.createElement("i");
+    p.style.left = Math.random() * 100 + "vw";
+    p.style.background = colors[k % colors.length];
+    p.style.animationDuration = (2.5 + Math.random() * 3) + "s";
+    p.style.animationDelay = (Math.random() * .8) + "s";
+    c.appendChild(p);
+  }
+  setTimeout(() => { c.innerHTML = ""; }, 7000);
+}
+
+function logout(msg){
+  PW = "";
+  try { sessionStorage.removeItem("s54pw"); } catch (e) {}
+  $("adminView").classList.add("hidden");
+  $("loginView").classList.remove("hidden");
+  $("loginMsg").textContent = msg || "";
+}
+
+$("loginForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  PW = $("pw").value;
+  const btn = $("loginBtn");
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>Belépés…';
+  $("loginMsg").textContent = "";
+  const ok = await enter();
+  btn.disabled = false;
+  btn.textContent = "Belépés";
+  if (ok) try { sessionStorage.setItem("s54pw", PW); } catch (e) {}
+});
+
+async function enter(){
+  const res = await call({ action:"list" });
+  if (!res.ok){
+    $("loginMsg").textContent = res.error === "auth" ? "Hibás jelszó." : "Nem jött létre kapcsolat. Érdemes újra próbálni.";
+    PW = "";
+    return false;
+  }
+  state = res;
+  $("loginView").classList.add("hidden");
+  $("adminView").classList.remove("hidden");
+  $("adminMsg").textContent = res.open ? "" : "A jelentkezés jelenleg le van zárva (Apps Script → QUIZ_OPEN).";
+  render();
+  return true;
+}
+
+$("refreshBtn").addEventListener("click", () => { drawn = false; load(); });
+$("logoutBtn").addEventListener("click", () => logout(""));
+
+if (PW) enter();
+</script>
+</body>
+</html>

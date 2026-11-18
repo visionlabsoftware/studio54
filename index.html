@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Studio 54 – Hangolódjunk a bulira!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Monoton&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --gold:#e8b863;
+    --gold-soft:#f6dca6;
+    --gold-deep:#b9832f;
+    --magenta:#d24bb0;
+    --ink:#f8efe3;
+    --muted:#cdbda6;
+    --panel:rgba(18,10,8,.62);
+    --line:rgba(232,184,99,.28);
+    --good:#7fd6a0;
+    --bad:#f07a8c;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{min-height:100%}
+  body{
+    font-family:"DM Sans",system-ui,sans-serif;
+    color:var(--ink);
+    background:#0d0706;
+    min-height:100vh;
+    min-height:100dvh;
+    -webkit-font-smoothing:antialiased;
+    /* nincs villogó szövegkurzor és szövegkijelölés a feliratokon */
+    caret-color:transparent;
+    -webkit-user-select:none;
+    user-select:none;
+    cursor:default;
+    -webkit-tap-highlight-color:transparent;
+  }
+  input{caret-color:var(--gold-soft);-webkit-user-select:text;user-select:text;cursor:text}
+  button,label,input[type=checkbox]{cursor:pointer}
+  .bg{
+    position:fixed;inset:0;z-index:0;
+    background:url("bg.jpg") center/cover no-repeat;
+  }
+  .bg::after{
+    content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(ellipse at 50% 35%, rgba(13,7,6,.35), rgba(13,7,6,.85) 75%),
+      linear-gradient(180deg, rgba(13,7,6,.15), rgba(13,7,6,.75));
+  }
+  .sparkles{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+  .sparkles i{
+    position:absolute;width:3px;height:3px;border-radius:50%;
+    background:var(--gold-soft);box-shadow:0 0 8px 2px rgba(246,220,166,.7);
+    opacity:0;animation:twinkle 4s ease-in-out infinite;
+  }
+  @keyframes twinkle{0%,100%{opacity:0;transform:scale(.4)}50%{opacity:.9;transform:scale(1)}}
+  #trail{position:fixed;inset:0;z-index:50;pointer-events:none}
+
+  main{
+    position:relative;z-index:2;
+    min-height:100vh;min-height:100dvh;
+    display:flex;align-items:center;justify-content:center;
+    padding:28px 18px 40px;
+  }
+  .card{
+    width:100%;max-width:620px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:22px;
+    padding:38px 34px 34px;
+    backdrop-filter:blur(14px) saturate(1.2);
+    -webkit-backdrop-filter:blur(14px) saturate(1.2);
+    box-shadow:0 30px 80px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.06);
+  }
+  .screen{display:none;animation:fade .45s ease}
+  .screen.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  /* Intro */
+  .logo{
+    font-family:"Monoton",cursive;font-weight:400;
+    font-size:clamp(46px,12vw,78px);
+    line-height:1;text-align:center;letter-spacing:2px;
+    color:var(--gold-soft);
+    text-shadow:0 0 18px rgba(232,184,99,.55),0 0 42px rgba(210,75,176,.35);
+  }
+  .tagline{
+    font-family:"Playfair Display",serif;font-style:italic;font-weight:600;
+    text-align:center;color:var(--gold);
+    font-size:clamp(20px,4.6vw,26px);margin-top:14px;
+  }
+  .divider{
+    display:flex;align-items:center;gap:12px;margin:22px auto;max-width:260px;
+    color:var(--gold);
+  }
+  .divider::before,.divider::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+  .intro-text{
+    text-align:center;color:var(--muted);line-height:1.6;font-size:16px;
+    max-width:440px;margin:0 auto 24px;
+  }
+  .meta{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:26px}
+  .chip{
+    font-size:13px;letter-spacing:.06em;text-transform:uppercase;
+    padding:7px 13px;border-radius:999px;border:1px solid var(--line);color:var(--gold-soft);
+    background:rgba(232,184,99,.06);
+  }
+
+  /* Raffle box */
+  .raffle{
+    border:1px solid var(--line);border-radius:16px;
+    background:linear-gradient(135deg,rgba(232,184,99,.08),rgba(210,75,176,.06));
+    padding:20px 20px 18px;margin-bottom:22px;
+  }
+  .raffle h3{
+    font-family:"Playfair Display",serif;font-weight:700;font-size:19px;color:var(--gold-soft);
+    display:flex;align-items:center;gap:8px;margin-bottom:6px;
+  }
+  .raffle h3 .opt-tag{font:500 11px/1 "DM Sans",sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 8px}
+  .raffle p{color:var(--muted);font-size:14px;line-height:1.55;margin-bottom:14px}
+  .field{
+    width:100%;font:500 16px/1.3 "DM Sans",sans-serif;color:var(--ink);
+    background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.16);border-radius:12px;
+    padding:14px 15px;outline:none;transition:border-color .2s, box-shadow .2s;
+  }
+  .field::placeholder{color:rgba(205,189,166,.55)}
+  .field:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(232,184,99,.18)}
+    appearance:none;-webkit-appearance:none;flex:0 0 20px;width:20px;height:20px;margin-top:1px;
+    border:1px solid var(--gold);border-radius:6px;background:rgba(0,0,0,.3);display:grid;place-items:center;
+  }
+  .form-msg{font-size:13.5px;margin-top:10px;min-height:0;color:var(--bad);line-height:1.45}
+  .form-msg:empty{display:none}
+  .hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+
+  .btn{
+    display:block;width:100%;
+    font:700 16px/1 "DM Sans",sans-serif;letter-spacing:.08em;text-transform:uppercase;
+    color:#1c0f07;
+    background:linear-gradient(135deg,var(--gold-soft),var(--gold) 45%,var(--gold-deep));
+    border:none;border-radius:14px;padding:18px 22px;
+    box-shadow:0 10px 30px rgba(232,184,99,.28);
+    transition:transform .15s ease, box-shadow .2s ease, opacity .2s;
+  }
+  .btn:hover{transform:translateY(-1px);box-shadow:0 14px 36px rgba(232,184,99,.38)}
+  .btn:active{transform:translateY(1px)}
+  .btn:disabled{opacity:.6;transform:none;cursor:wait}
+  .btn:focus-visible{outline:2px solid var(--gold-soft);outline-offset:3px}
+  .btn.ghost{
+    background:transparent;color:var(--gold-soft);border:1px solid var(--line);box-shadow:none;
+  }
+  .btn.ghost:hover{background:rgba(232,184,99,.08)}
+
+  /* Question */
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .mini-logo{font-family:"Monoton",cursive;color:var(--gold);font-size:22px;letter-spacing:1px}
+  .counter{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .counter b{color:var(--gold-soft)}
+  .progress{height:4px;border-radius:4px;background:rgba(255,255,255,.08);overflow:hidden;margin-bottom:28px}
+  .progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--magenta),var(--gold));transition:width .5s ease}
+
+  .q{
+    font-family:"Playfair Display",serif;font-weight:700;
+    font-size:clamp(22px,5vw,28px);line-height:1.3;margin-bottom:24px;
+  }
+  .options{display:grid;gap:12px;list-style:none}
+  .opt{
+    width:100%;display:flex;align-items:center;gap:14px;text-align:left;
+    font:500 16px/1.4 "DM Sans",sans-serif;color:var(--ink);
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:14px;padding:15px 16px;
+    transition:border-color .2s, background .2s, transform .15s;
+  }
+  .opt:hover:not(:disabled){border-color:var(--gold);background:rgba(232,184,99,.08);transform:translateX(2px)}
+  .opt:focus-visible{outline:2px solid var(--gold-soft);outline-offset:2px}
+  .opt:disabled{cursor:default}
+  .letter{
+    flex:0 0 34px;height:34px;border-radius:50%;
+    display:grid;place-items:center;
+    font-weight:700;font-size:14px;color:var(--gold-soft);
+    border:1px solid var(--line);background:rgba(232,184,99,.07);
+    transition:all .2s;
+  }
+  .opt.correct{border-color:var(--good);background:rgba(127,214,160,.12)}
+  .opt.correct .letter{background:var(--good);border-color:var(--good);color:#0f2418}
+  .opt.wrong{border-color:var(--bad);background:rgba(240,122,140,.12)}
+  .opt.wrong .letter{background:var(--bad);border-color:var(--bad);color:#2a0c12}
+  .opt.dim{opacity:.45}
+
+  .feedback{
+    margin-top:20px;padding:16px 18px;border-radius:14px;
+    border-left:3px solid var(--gold);
+    background:rgba(232,184,99,.07);
+    line-height:1.55;font-size:15px;color:var(--muted);
+    display:none;
+  }
+  .feedback.show{display:block;animation:fade .35s ease}
+  .feedback strong{display:block;font-size:16px;margin-bottom:4px}
+  .feedback.ok{border-left-color:var(--good)} .feedback.ok strong{color:var(--good)}
+  .feedback.no{border-left-color:var(--bad)} .feedback.no strong{color:var(--bad)}
+  #nextBtn{margin-top:22px;display:none}
+  #nextBtn.show{display:block;animation:fade .35s ease}
+
+  /* Result */
+  .score-wrap{text-align:center}
+  .score-label{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:6px}
+  .score{
+    font-family:"Playfair Display",serif;font-weight:700;
+    font-size:clamp(64px,18vw,96px);line-height:1;margin:10px 0 4px;
+    background:linear-gradient(135deg,var(--gold-soft),var(--gold),var(--magenta));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .score small{font-size:.42em;color:var(--muted);-webkit-text-fill-color:var(--muted)}
+  .verdict{font-family:"Playfair Display",serif;font-style:italic;font-size:24px;color:var(--gold-soft);margin:10px 0 8px}
+  .verdict-text{color:var(--muted);line-height:1.6;max-width:440px;margin:0 auto 22px}
+
+  .entry{
+    display:none;align-items:center;gap:14px;text-align:left;
+    border-radius:14px;padding:16px 18px;margin-bottom:22px;
+    border:1px solid var(--line);background:rgba(232,184,99,.07);
+    font-size:15px;line-height:1.5;color:var(--muted);
+  }
+  .entry.show{display:flex;animation:fade .35s ease}
+  .entry .ico{flex:0 0 38px;height:38px;border-radius:50%;display:grid;place-items:center;font-size:18px;background:rgba(232,184,99,.15);color:var(--gold-soft)}
+  .entry strong{display:block;color:var(--ink);font-size:16px}
+  .entry.ok{border-color:rgba(127,214,160,.5);background:rgba(127,214,160,.08)}
+  .entry.ok .ico{background:var(--good);color:#0f2418}
+  .entry.err{border-color:rgba(240,122,140,.5);background:rgba(240,122,140,.08)}
+  .entry.err .ico{background:var(--bad);color:#2a0c12}
+  .entry .retry{margin-top:8px;font:700 13px/1 "DM Sans",sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--gold-soft);background:none;border:1px solid var(--line);border-radius:10px;padding:9px 12px}
+  .spin{width:18px;height:18px;border:2px solid rgba(246,220,166,.3);border-top-color:var(--gold-soft);border-radius:50%;animation:rot .8s linear infinite}
+  @keyframes rot{to{transform:rotate(360deg)}}
+
+  .review{list-style:none;display:grid;gap:10px;margin-bottom:26px;text-align:left}
+  .review li{
+    display:flex;gap:12px;align-items:flex-start;
+    padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+    font-size:14.5px;line-height:1.45;
+  }
+  .review .mark{flex:0 0 24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700}
+  .review .mark.ok{background:var(--good);color:#0f2418}
+  .review .mark.no{background:var(--bad);color:#2a0c12}
+  .review .rq{color:var(--ink)}
+  .review .ra{color:var(--gold-soft);display:block;margin-top:3px;font-size:13.5px}
+  .see-you{
+    text-align:center;margin-top:22px;font-family:"Playfair Display",serif;font-style:italic;
+    color:var(--gold);font-size:18px;
+  }
+  .confetti{position:fixed;inset:0;pointer-events:none;z-index:5;overflow:hidden}
+  .confetti i{position:absolute;top:-12px;width:8px;height:14px;border-radius:2px;opacity:.9;animation:fall linear forwards}
+  @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+
+  @media (max-width:480px){
+    .card{padding:30px 20px 24px;border-radius:18px}
+    .opt{padding:13px 14px;font-size:15.5px}
+    .raffle{padding:18px 16px 16px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+  }
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true"></div>
+<div class="sparkles" id="sparkles" aria-hidden="true"></div>
+<canvas id="trail" aria-hidden="true"></canvas>
+
+<main>
+  <div class="card">
+
+    <!-- Intro -->
+    <section class="screen active" id="intro" aria-labelledby="introTitle">
+      <h1 class="logo" id="introTitle">Studio 54</h1>
+      <p class="tagline">Hangolódjunk a bulira!</p>
+      <div class="divider" aria-hidden="true">✦</div>
+      <p class="intro-text">Egy kis időutazás a hetvenes évek legendás New York-i klubjába. Kilenc kérdés, három válaszlehetőség – és egy kis ízelítő az este hangulatából.</p>
+      <div class="meta">
+        <span class="chip">9 kérdés</span>
+        <span class="chip">kb. 3 perc</span>
+        <span class="chip">Sorsolás</span>
+      </div>
+
+      <form id="startForm" novalidate>
+        <div class="raffle">
+          <h3>Részvétel a sorsoláson <span class="opt-tag">nem kötelező</span></h3>
+          <p>A céges e-mail-cím megadásával a kitöltés bekerül a sorsolásba – minden helyes válasz egy sorsjegyet ér. Egy e-mail-címmel egy kitöltés lehetséges. E-mail-cím nélkül is játszható a kvíz, ilyenkor csak a sorsolás marad ki.</p>
+          <label class="hp" aria-hidden="true">Weboldal <input type="text" id="website" tabindex="-1" autocomplete="off"></label>
+          <input class="field" type="email" id="email" inputmode="email" autocomplete="email" placeholder="Céges e-mail-cím" aria-label="Céges e-mail-cím">
+          <div class="form-msg" id="formMsg" role="alert"></div>
+        </div>
+        <button class="btn" id="startBtn" type="submit">Indulhat a kvíz</button>
+      </form>
+    </section>
+
+    <!-- Question -->
+    <section class="screen" id="quiz" aria-live="polite">
+      <div class="topbar">
+        <span class="mini-logo" aria-hidden="true">54</span>
+        <span class="counter"><b id="qNum">1</b> / <span id="qTotal">9</span>. kérdés</span>
+      </div>
+      <div class="progress" aria-hidden="true"><span id="bar"></span></div>
+      <h2 class="q" id="qText"></h2>
+      <ul class="options" id="options"></ul>
+      <div class="feedback" id="feedback" role="status"></div>
+      <button class="btn" id="nextBtn" type="button">Következő kérdés</button>
+    </section>
+
+    <!-- Result -->
+    <section class="screen" id="result" aria-live="polite">
+      <div class="score-wrap">
+        <span class="mini-logo" aria-hidden="true">54</span>
+        <p class="score-label">Az eredmény</p>
+        <div class="score"><span id="scoreNum">0</span><small id="scoreMax"> / 9</small></div>
+        <p class="verdict" id="verdict"></p>
+        <p class="verdict-text" id="verdictText"></p>
+      </div>
+      <div class="entry" id="entry" role="status"></div>
+      <ul class="review" id="review"></ul>
+      <button class="btn ghost" id="restartBtn" type="button">Újrajátszás (sorsolás nélkül)</button>
+      <p class="see-you">Találkozzunk a táncparketten! ✦</p>
+    </section>
+
+  </div>
+</main>
+<div class="confetti" id="confetti" aria-hidden="true"></div>
+
+<script>
+const PREVIEW = false;   // true: előnézet, nincs beküldés
+const API = "__API__";   // a Google Apps Script webalkalmazás URL-je
+
+const QUESTIONS = [
+  {
+    q: "Melyik városban nyitotta meg kapuit a legendás Studio 54 klub?",
+    options: ["London", "New York", "Los Angeles"],
+    correct: 1,
+    fact: "A Studio 54 1977-ben nyílt meg Manhattanben, a West 54th Streeten – a klub innen kapta a nevét is."
+  },
+  {
+    q: "Melyik évtizedhez kötődik leginkább a Studio 54 fénykora?",
+    options: ["1960-as évek", "1970-es évek", "1980-as évek"],
+    correct: 1,
+    fact: "A legendás korszak 1977 és 1980 között tartott – alig három év, ami örökre beírta magát a popkultúrába."
+  },
+  {
+    q: "Melyik zenei műfaj volt a Studio 54 egyik legmeghatározóbb hangzása?",
+    options: ["Disco", "Punk", "Grunge"],
+    correct: 0,
+    fact: "A klub a disco szentélye volt: lüktető ritmusok, csillogó fények és egy hatalmas táncparkett, ami hajnalig tele volt."
+  },
+  {
+    q: "Ki volt a korszak egyik ikonikus disco-énekesnője, akit a „Disco királynőjeként” is emlegetnek?",
+    options: ["Madonna", "Donna Summer", "Tina Turner"],
+    correct: 1,
+    fact: "Donna Summer olyan slágerekkel írt történelmet, mint az „I Feel Love” vagy a „Hot Stuff”."
+  },
+  {
+    q: "Mi volt a Studio 54 egyik legkülönlegesebb sajátossága?",
+    options: [
+      "Csak meghívóval lehetett bejutni, és a bejáratnál szigorú válogatás zajlott",
+      "Kizárólag élőzenés koncerteket tartottak",
+      "A vendégeknek kötelező volt jelmezben érkezniük"
+    ],
+    correct: 0,
+    fact: "A szigorú ajtópolitika legendás volt: a bejáratnál dőlt el, ki kerülhet be – a vendéglistán pedig a kor legnagyobb sztárjai szerepeltek."
+  },
+  {
+    q: "Melyik film tette igazán ikonikussá a 70-es évek diszkóvilágát John Travolta főszereplésével?",
+    options: ["Grease", "Szombat esti láz", "Flashdance"],
+    correct: 1,
+    fact: "A Szombat esti láz 1977-ben került a mozikba: Travolta fehér öltönyös tánca és a film zenéje az egész világot diszkólázba hozta."
+  },
+  {
+    q: "Melyik zenekar slágereihez kötődik a „Stayin' Alive” című dal?",
+    options: ["ABBA", "Boney M.", "Bee Gees"],
+    correct: 2,
+    fact: "A Bee Gees dala a Szombat esti láz nyitójelenetében szól. Érdekesség: ritmusa közel azonos az újraélesztéskor ajánlott mellkaskompressziós tempóval."
+  },
+  {
+    q: "Milyen különleges látványelem lógott szinte minden diszkó mennyezetéről?",
+    options: ["Diszkógömb", "Papírlampion", "Neonóra"],
+    correct: 0,
+    fact: "A tükördarabkákkal borított gömb néhány reflektor fényéből ezernyi csillogó pöttyöt varázsol – a 70-es években vált a diszkók jelképévé."
+  },
+  {
+    q: "Melyik divatkiegészítő volt igazán jellemző a 70-es évek diszkóstílusára?",
+    options: ["Színes, nagy lencsés napszemüveg", "Baseballsapka", "Kötött sál"],
+    correct: 0,
+    fact: "A nagy, színes lencsés napszemüveg a csillogó ruhákkal és a platformcipőkkel együtt a diszkókorszak igazi védjegye lett."
+  }
+];
+
+const LETTERS = ["A", "B", "C"];
+const $ = id => document.getElementById(id);
+let current = 0, score = 0, answers = [];
+let raffleEmail = null;   // ha van, a végén beküldés történik
+
+function show(id){
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  $(id).classList.add("active");
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+/* ---------- Kezdés + e-mail ellenőrzés ---------- */
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+async function postJSON(body){
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 12000);
+  try{
+    const r = await fetch(API, {
+      method:"POST",
+      body:JSON.stringify(body),   // text/plain → nincs CORS-előellenőrzés
+      signal:ctrl.signal,
+      cache:"no-store",
+      redirect:"follow"
+    });
+    let data = {};
+    try{ data = await r.json(); }catch(e){}
+    return { status:r.status, data };
+  } finally { clearTimeout(t); }
+}
+
+$("startForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const msg = $("formMsg");
+  msg.textContent = "";
+  const email = $("email").value.trim().toLowerCase();
+
+  if (!email){
+    raffleEmail = null;
+    return begin();
+  }
+  if (!EMAIL_RE.test(email)){ msg.textContent = "Az e-mail-cím formátuma nem megfelelő."; return; }
+
+  if (PREVIEW){ raffleEmail = email; return begin(); }
+
+  const btn = $("startBtn");
+  btn.disabled = true;
+  btn.textContent = "Egy pillanat…";
+  try{
+    const { status, data } = await postJSON({ action:"check", email, website:$("website").value });
+    if (data.ok){ raffleEmail = email; begin(); }
+    else if (data.error === "duplicate"){ msg.textContent = "Ezzel az e-mail-címmel már érkezett kitöltés. A kvíz e-mail-cím nélkül továbbra is játszható."; }
+    else if (data.error === "closed"){ msg.textContent = "A sorsolásra jelentkezés lezárult. A kvíz e-mail-cím nélkül továbbra is játszható."; }
+    else { msg.textContent = "Nem sikerült ellenőrizni a címet. Érdemes pár másodperc múlva újra próbálni."; }
+  }catch(err){
+    msg.textContent = "Nem jött létre kapcsolat a szerverrel. Érdemes pár másodperc múlva újra próbálni.";
+  }finally{
+    btn.disabled = false;
+    btn.textContent = "Indulhat a kvíz";
+  }
+});
+
+function begin(){
+  current = 0; score = 0; answers = [];
+  renderQuestion();
+  show("quiz");
+}
+
+/* ---------- Kvíz ---------- */
+function renderQuestion(){
+  const item = QUESTIONS[current];
+  $("qNum").textContent = current + 1;
+  $("qTotal").textContent = QUESTIONS.length;
+  $("bar").style.width = (current / QUESTIONS.length * 100) + "%";
+  $("qText").textContent = item.q;
+  const list = $("options");
+  list.innerHTML = "";
+  item.options.forEach((text, i) => {
+    const li = document.createElement("li");
+    const b = document.createElement("button");
+    b.className = "opt";
+    b.type = "button";
+    b.innerHTML = `<span class="letter">${LETTERS[i]}</span><span></span>`;
+    b.lastChild.textContent = text;
+    b.addEventListener("click", () => choose(i));
+    li.appendChild(b);
+    list.appendChild(li);
+  });
+  const fb = $("feedback");
+  fb.className = "feedback";
+  fb.innerHTML = "";
+  const nb = $("nextBtn");
+  nb.className = "btn";
+  nb.textContent = current === QUESTIONS.length - 1 ? "Eredmény megtekintése" : "Következő kérdés";
+}
+
+function choose(i){
+  const item = QUESTIONS[current];
+  const btns = [...$("options").querySelectorAll(".opt")];
+  btns.forEach((b, idx) => {
+    b.disabled = true;
+    if (idx === item.correct) b.classList.add("correct");
+    else if (idx === i) b.classList.add("wrong");
+    else b.classList.add("dim");
+  });
+  const ok = i === item.correct;
+  if (ok) score++;
+  answers.push(i);
+  $("bar").style.width = ((current + 1) / QUESTIONS.length * 100) + "%";
+
+  const fb = $("feedback");
+  fb.className = "feedback show " + (ok ? "ok" : "no");
+  fb.innerHTML = `<strong>${ok ? "Telitalálat! ✦" : "Majdnem! A helyes válasz: " + LETTERS[item.correct]}</strong><span></span>`;
+  fb.lastChild.textContent = item.fact;
+  const nb = $("nextBtn");
+  nb.classList.add("show");
+  nb.focus({preventScroll:true});
+}
+
+$("nextBtn").addEventListener("click", () => {
+  current++;
+  if (current < QUESTIONS.length) renderQuestion();
+  else showResult();
+});
+
+/* ---------- Eredmény ---------- */
+function showResult(){
+  const total = QUESTIONS.length;
+  $("scoreNum").textContent = score;
+  $("scoreMax").textContent = " / " + total;
+  let v, t;
+  if (score === total){ v = "Igazi Studio 54 legenda!"; t = "Hibátlan! Ezzel a tudással a bejáratnál sem lehetne gond – irány a táncparkett."; }
+  else if (score >= Math.ceil(total * 0.6)){ v = "A vendéglistán a helyed!"; t = "Szép eredmény – a disco-korszak hangulata már megvan, a többit hozza az este."; }
+  else { v = "A buli már csak felpörget!"; t = "Nem baj, ha néhány válasz most nem talált – a lényeg úgyis a jó hangulat és a közös tánc."; }
+  $("verdict").textContent = v;
+  $("verdictText").textContent = t;
+
+  const r = $("review");
+  r.innerHTML = "";
+  QUESTIONS.forEach((item, idx) => {
+    const ok = answers[idx] === item.correct;
+    const li = document.createElement("li");
+    li.innerHTML = `<span class="mark ${ok ? "ok" : "no"}">${ok ? "✓" : "✕"}</span><span><span class="rq"></span><span class="ra"></span></span>`;
+    li.querySelector(".rq").textContent = (idx + 1) + ". " + item.q;
+    li.querySelector(".ra").textContent = "Helyes válasz: " + LETTERS[item.correct] + " – " + item.options[item.correct];
+    r.appendChild(li);
+  });
+
+  const entry = $("entry");
+  entry.className = "entry";
+  entry.innerHTML = "";
+  $("restartBtn").textContent = raffleEmail ? "Újrajátszás (sorsolás nélkül)" : "Újrajátszás";
+  show("result");
+  if (score >= Math.ceil(total * 0.6)) confetti();
+  if (raffleEmail) submitEntry();
+}
+
+function ticketsText(n){
+  return n === 0 ? "Ezúttal nem jár sorsjegy." : `${n} sorsjegy került a kalapba.`;
+}
+
+function setEntry(kind, icon, title, text, retry){
+  const entry = $("entry");
+  entry.className = "entry show " + kind;
+  entry.innerHTML = `<span class="ico">${icon}</span><span><strong></strong><span class="txt"></span></span>`;
+  entry.querySelector("strong").textContent = title;
+  entry.querySelector(".txt").textContent = text;
+  if (retry){
+    const b = document.createElement("button");
+    b.className = "retry"; b.type = "button"; b.textContent = "Újrapróbálás";
+    b.addEventListener("click", submitEntry);
+    entry.querySelector(".txt").after(document.createElement("br"), b);
+  }
+}
+
+async function submitEntry(){
+  if (PREVIEW){
+    setEntry("", "✦", "Előnézet", "Itt jelenik meg a sorsolásra jelentkezés visszaigazolása – a beküldés a céges tárhelyre feltöltött változatban működik.");
+    return;
+  }
+  const entry = $("entry");
+  entry.className = "entry show";
+  entry.innerHTML = `<span class="ico"><span class="spin"></span></span><span><strong>Beküldés folyamatban…</strong></span>`;
+  try{
+    const { status, data } = await postJSON({ action:"submit", email:raffleEmail, answers, website:$("website").value });
+    if (data.ok){
+      setEntry("ok", "✓", "Bekerült a sorsolásba!", ticketsText(data.tickets));
+      raffleEmail = null;
+    } else if (data.error === "duplicate"){
+      setEntry("err", "!", "Ezzel az e-mail-címmel már érkezett kitöltés.", "A sorsolásba címenként egy kitöltés kerülhet be.");
+      raffleEmail = null;
+    } else if (data.error === "closed"){
+      setEntry("err", "!", "A jelentkezés lezárult.", "A sorsolásra már nem lehet jelentkezni.");
+      raffleEmail = null;
+    } else {
+      setEntry("err", "!", "A beküldés nem sikerült.", "Érdemes újra próbálni – az eredmény addig itt marad.", true);
+    }
+  }catch(err){
+    setEntry("err", "!", "Nem jött létre kapcsolat a szerverrel.", "Érdemes újra próbálni – az eredmény addig itt marad.", true);
+  }
+}
+
+$("restartBtn").addEventListener("click", () => {
+  raffleEmail = null;
+  begin();
+});
+
+function confetti(){
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const c = $("confetti");
+  const colors = ["#f6dca6","#e8b863","#d24bb0","#ffffff","#b9832f"];
+  for (let k = 0; k < 90; k++){
+    const p = document.createElement("i");
+    p.style.left = Math.random() * 100 + "vw";
+    p.style.background = colors[k % colors.length];
+    p.style.animationDuration = (2.5 + Math.random() * 2.5) + "s";
+    p.style.animationDelay = (Math.random() * .8) + "s";
+    p.style.transform = `rotate(${Math.random()*360}deg)`;
+    c.appendChild(p);
+  }
+  setTimeout(() => { c.innerHTML = ""; }, 6000);
+}
+
+/* ---------- Háttér-csillogás ---------- */
+(function(){
+  const s = $("sparkles");
+  for (let k = 0; k < 28; k++){
+    const d = document.createElement("i");
+    d.style.left = Math.random() * 100 + "%";
+    d.style.top = Math.random() * 100 + "%";
+    d.style.animationDelay = (Math.random() * 4) + "s";
+    d.style.animationDuration = (3 + Math.random() * 3) + "s";
+    s.appendChild(d);
+  }
+})();
+
+/* ---------- Csillámcsík a kurzor után ---------- */
+(function(){
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const cv = $("trail");
+  const ctx = cv.getContext("2d");
+  let W = 0, H = 0, dpr = 1;
+  function resize(){
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = innerWidth; H = innerHeight;
+    cv.width = W * dpr; cv.height = H * dpr;
+    cv.style.width = W + "px"; cv.style.height = H + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  resize();
+  addEventListener("resize", resize);
+
+  const COLORS = ["255,236,190", "232,184,99", "255,255,255", "236,120,205", "246,220,166"];
+  const points = [];     // a fénycsík pontjai
+  const parts = [];      // csillámok
+  let running = false, last = null;
+
+  function addSpark(x, y, speed){
+    const n = Math.min(4, 1 + Math.floor(speed / 12));
+    for (let i = 0; i < n; i++){
+      parts.push({
+        x: x + (Math.random() - .5) * 8,
+        y: y + (Math.random() - .5) * 8,
+        vx: (Math.random() - .5) * 1.2,
+        vy: Math.random() * 1.1 + .2,
+        r: Math.random() * 2.2 + .8,
+        life: 1,
+        decay: Math.random() * .018 + .014,
+        c: COLORS[(Math.random() * COLORS.length) | 0],
+        star: Math.random() < .35,
+        tw: Math.random() * Math.PI * 2
+      });
+    }
+    if (parts.length > 260) parts.splice(0, parts.length - 260);
+  }
+
+  function onMove(e){
+    const x = e.clientX, y = e.clientY;
+    const now = performance.now();
+    const speed = last ? Math.hypot(x - last.x, y - last.y) : 0;
+    last = { x, y };
+    points.push({ x, y, t: now });
+    addSpark(x, y, speed);
+    if (!running){ running = true; requestAnimationFrame(tick); }
+  }
+  addEventListener("pointermove", onMove, { passive:true });
+  addEventListener("pointerdown", e => { last = null; onMove(e); }, { passive:true });
+  addEventListener("pointerleave", () => { last = null; });
+
+  function drawStar(x, y, r, a, c){
+    ctx.fillStyle = `rgba(${c},${a})`;
+    ctx.beginPath();
+    ctx.moveTo(x, y - r * 2.6);
+    ctx.quadraticCurveTo(x, y, x + r * 2.6, y);
+    ctx.quadraticCurveTo(x, y, x, y + r * 2.6);
+    ctx.quadraticCurveTo(x, y, x - r * 2.6, y);
+    ctx.quadraticCurveTo(x, y, x, y - r * 2.6);
+    ctx.fill();
+  }
+
+  function tick(now){
+    ctx.clearRect(0, 0, W, H);
+    // régi pontok kidobása (kb. 0,35 mp-es csík)
+    while (points.length && now - points[0].t > 350) points.shift();
+
+    // fénylő csík
+    if (points.length > 1){
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      for (let i = 1; i < points.length; i++){
+        const p0 = points[i - 1], p1 = points[i];
+        const k = i / points.length;               // 0 → 1 a kurzor felé
+        const age = 1 - (now - p1.t) / 350;
+        const a = Math.max(0, k * age);
+        ctx.strokeStyle = `rgba(232,184,99,${a * .35})`;
+        ctx.lineWidth = 9 * k;
+        ctx.beginPath(); ctx.moveTo(p0.x, p0.y); ctx.lineTo(p1.x, p1.y); ctx.stroke();
+        ctx.strokeStyle = `rgba(255,244,214,${a * .9})`;
+        ctx.lineWidth = 2.4 * k;
+        ctx.beginPath(); ctx.moveTo(p0.x, p0.y); ctx.lineTo(p1.x, p1.y); ctx.stroke();
+      }
+    }
+
+    // csillámok
+    ctx.globalCompositeOperation = "lighter";
+    for (let i = parts.length - 1; i >= 0; i--){
+      const p = parts[i];
+      p.x += p.vx; p.y += p.vy; p.vy += .025;
+      p.life -= p.decay;
+      p.tw += .35;
+      if (p.life <= 0){ parts.splice(i, 1); continue; }
+      const a = p.life * (.6 + .4 * Math.sin(p.tw));
+      if (p.star){
+        drawStar(p.x, p.y, p.r * .9, a, p.c);
+      } else {
+        const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 3);
+        g.addColorStop(0, `rgba(${p.c},${a})`);
+        g.addColorStop(1, `rgba(${p.c},0)`);
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 3, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+    ctx.globalCompositeOperation = "source-over";
+
+    if (parts.length || points.length > 1) requestAnimationFrame(tick);
+    else { running = false; ctx.clearRect(0, 0, W, H); }
+  }
+})();
+</script>
+</body>
+</html>
