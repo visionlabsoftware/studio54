@@ -182,7 +182,8 @@ function render(){
   const cb = $("clearBtn");
   if (cb) cb.addEventListener("click", clearWinners);
 
-  const sorted = [...E].sort((a, b) => b.time.localeCompare(a.time));
+  const key = t => String(t).replace(/(\s)(\d):/, "$10$2:");   // 9:25 → 09:25 a helyes sorrendhez
+  const sorted = [...E].sort((a, b) => key(b.time).localeCompare(key(a.time)));
   $("entries").innerHTML = sorted.length
     ? `<table><thead><tr><th>E-mail-cím</th><th>Pont</th><th>Sorsjegy</th><th>Időpont</th></tr></thead><tbody>${
         sorted.map(e => `<tr><td class="email">${esc(e.email)}${won.includes(e.email) ? '<span class="pill">Nyertes</span>' : ""}</td><td class="${e.score === ANSWERS ? "score5" : ""}">${e.score} / ${ANSWERS}</td><td>${e.score}</td><td>${esc(e.time)}</td></tr>`).join("")
