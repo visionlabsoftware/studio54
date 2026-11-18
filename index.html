@@ -290,17 +290,6 @@
   .spin{width:18px;height:18px;border:2px solid rgba(246,220,166,.3);border-top-color:var(--gold-soft);border-radius:50%;animation:rot .8s linear infinite}
   @keyframes rot{to{transform:rotate(360deg)}}
 
-  .review{list-style:none;display:grid;gap:10px;margin-bottom:26px;text-align:left}
-  .review li{
-    display:flex;gap:12px;align-items:flex-start;
-    padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
-    font-size:14.5px;line-height:1.45;
-  }
-  .review .mark{flex:0 0 24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700}
-  .review .mark.ok{background:var(--good);color:#0f2418}
-  .review .mark.no{background:var(--bad);color:#2a0c12}
-  .review .rq{color:var(--ink)}
-  .review .ra{color:var(--gold-soft);display:block;margin-top:3px;font-size:13.5px}
   .see-you{
     text-align:center;margin-top:22px;font-family:"Playfair Display",serif;font-style:italic;
     color:var(--gold);font-size:18px;
@@ -309,12 +298,57 @@
   .confetti i{position:absolute;top:-12px;width:8px;height:14px;border-radius:2px;opacity:.9;animation:fall linear forwards}
   @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
 
+  /* Laptop / asztali gép: kétoszlopos kezdőlap, görgetés nélkül */
+  @media (min-width:900px){
+    main{padding:20px 24px}
+    .card{transition:max-width .35s ease}
+    .card.wide{max-width:1020px;padding:34px 42px}
+    #intro.active{
+      display:grid;grid-template-columns:1fr 1.05fr;column-gap:46px;align-items:center;
+      grid-template-areas:"head form" "quote form";
+    }
+    .intro-head{grid-area:head;align-self:end}
+    #startForm{grid-area:form}
+    #intro .quote{grid-area:quote;align-self:start;margin:22px auto 0}
+    #intro .logo{font-size:66px}
+    #intro .tagline{margin-top:10px}
+    #intro .divider{margin:18px auto}
+    #intro .intro-text{margin-bottom:18px}
+    #intro .meta{margin-bottom:0}
+    #intro .raffle{margin-bottom:18px}
+  }
+  @media (min-width:900px){
+    .card.result-wide{max-width:860px}
+    #result.active{
+      display:grid;grid-template-columns:300px 1fr;column-gap:44px;align-items:center;
+      grid-template-areas:"media score" "media rest";
+    }
+    .res-media{grid-area:media}
+    .res-score{grid-area:score;align-self:end}
+    .res-rest{grid-area:rest;align-self:start}
+    #result .result-img{max-width:300px;margin:0 auto;max-height:calc(100dvh - 120px);width:auto}
+    #result .entry{margin:18px 0}
+  }
+  @media (min-width:900px) and (max-height:760px){
+    .card.wide{padding:26px 38px}
+    #intro .logo{font-size:56px}
+    #intro .divider{margin:12px auto}
+    #intro .intro-text{font-size:15px;margin-bottom:14px}
+    .prize-visual{height:168px}
+    #intro .raffle{padding:16px 18px 16px}
+    .prize-sep{margin:14px 0 12px}
+    #intro .quote{margin-top:16px}
+    #intro .quote blockquote{font-size:16.5px}
+    .btn{padding:16px 22px}
+  }
+
   @media (max-width:480px){
     .card{padding:30px 20px 24px;border-radius:18px}
     .opt{padding:13px 14px;font-size:15.5px}
     .raffle{padding:18px 16px 16px}
     .prize{grid-template-columns:96px 1fr;gap:14px}
     .quote blockquote{font-size:16.5px}
+    .btn{font-size:15px;letter-spacing:.05em}
     .prize-visual{height:172px}
     .raffle .prize-name{font-size:19px}
     .prize-name em{font-size:16px}
@@ -330,10 +364,11 @@
 <canvas id="trail" aria-hidden="true"></canvas>
 
 <main>
-  <div class="card">
+  <div class="card wide">
 
     <!-- Intro -->
     <section class="screen active" id="intro" aria-labelledby="introTitle">
+      <div class="intro-head">
       <h1 class="logo" id="introTitle">Studio 54</h1>
       <p class="tagline">Hangolódjunk a bulira!</p>
       <div class="divider" aria-hidden="true">✦</div>
@@ -342,6 +377,7 @@
         <span class="chip">9 kérdés</span>
         <span class="chip">kb. 3 perc</span>
         <span class="chip">Pezsgősorsolás</span>
+      </div>
       </div>
 
       <form id="startForm" novalidate>
@@ -389,16 +425,19 @@
 
     <!-- Result -->
     <section class="screen" id="result" aria-live="polite">
-      <div class="score-wrap">
+      <div class="res-score score-wrap">
         <span class="mini-logo" aria-hidden="true">54</span>
         <p class="score-label">Az eredmény</p>
         <div class="score"><span id="scoreNum">0</span><small id="scoreMax"> / 9</small></div>
+      </div>
+      <div class="res-media">
         <img class="result-img" id="resultImg" alt="" draggable="false">
       </div>
-      <div class="entry" id="entry" role="status"></div>
-      <ul class="review" id="review"></ul>
-      <button class="btn ghost" id="restartBtn" type="button">Újrajátszás (sorsolás nélkül)</button>
-      <p class="see-you">Találkozzunk a táncparketten! ✦</p>
+      <div class="res-rest">
+        <div class="entry" id="entry" role="status"></div>
+        <button class="btn ghost" id="restartBtn" type="button">Újrajátszás (sorsolás nélkül)</button>
+        <p class="see-you">Találkozzunk a táncparketten! ✦</p>
+      </div>
     </section>
 
   </div>
@@ -488,6 +527,8 @@ let raffleEmail = null;   // ha van, a végén beküldés történik
 function show(id){
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
   $(id).classList.add("active");
+  document.querySelector(".card").classList.toggle("wide", id === "intro");
+  document.querySelector(".card").classList.toggle("result-wide", id === "result");
   window.scrollTo({top:0, behavior:"smooth"});
 }
 
@@ -618,16 +659,6 @@ function showResult(){
   img.alt = res.alt;
   img.style.animation = "none"; void img.offsetWidth; img.style.animation = "";
 
-  const r = $("review");
-  r.innerHTML = "";
-  QUESTIONS.forEach((item, idx) => {
-    const ok = answers[idx] === item.correct;
-    const li = document.createElement("li");
-    li.innerHTML = `<span class="mark ${ok ? "ok" : "no"}">${ok ? "✓" : "✕"}</span><span><span class="rq"></span><span class="ra"></span></span>`;
-    li.querySelector(".rq").textContent = (idx + 1) + ". " + item.q;
-    li.querySelector(".ra").textContent = "Helyes válasz: " + LETTERS[item.correct] + " – " + item.options[item.correct];
-    r.appendChild(li);
-  });
 
   const entry = $("entry");
   entry.className = "entry";
